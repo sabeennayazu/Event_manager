@@ -10,7 +10,7 @@ from .forms import EventForm, ReminderForm
 
 
 def event_list(request):
-    """List all events with filtering options"""
+    
     view_type = request.GET.get('view', 'month')
     today = timezone.now().date()
     
@@ -31,17 +31,16 @@ def event_list(request):
             'start_week': start_week,
             'end_week': end_week,
         }
-    else:  # month view
+    else:  
         year = int(request.GET.get('year', today.year))
         month = int(request.GET.get('month', today.month))
         
-        # Get first and last day of the month
         first_day = datetime(year, month, 1).date()
         last_day = datetime(year, month, calendar.monthrange(year, month)[1]).date()
         
         events = Event.objects.filter(date__range=[first_day, last_day])
         
-        # Create calendar structure
+       
         cal = calendar.monthcalendar(year, month)
         events_by_date = {}
         for event in events:
@@ -67,7 +66,7 @@ def event_list(request):
 
 
 def add_event(request):
-    """Add a new event"""
+    
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
@@ -81,7 +80,7 @@ def add_event(request):
 
 
 def edit_event(request, event_id):
-    """Edit an existing event"""
+    
     event = get_object_or_404(Event, id=event_id)
     
     if request.method == 'POST':
@@ -97,7 +96,7 @@ def edit_event(request, event_id):
 
 
 def delete_event(request, event_id):
-    """Delete an event"""
+    
     event = get_object_or_404(Event, id=event_id)
     
     if request.method == 'POST':
@@ -110,7 +109,7 @@ def delete_event(request, event_id):
 
 
 def mark_attended(request, event_id):
-    """Mark an event as attended or not attended"""
+    # jati garera ni namilesi ai nai use garna paryo yesma
     event = get_object_or_404(Event, id=event_id)
     
     if request.method == 'POST':
@@ -131,7 +130,7 @@ def mark_attended(request, event_id):
 
 
 def set_reminder(request, event_id):
-    """Add a reminder to an event"""
+    "
     event = get_object_or_404(Event, id=event_id)
     
     if request.method == 'POST':
@@ -152,7 +151,7 @@ def set_reminder(request, event_id):
 
 
 def event_detail(request, event_id):
-    """View event details with reminders"""
+   
     event = get_object_or_404(Event, id=event_id)
     reminders = event.reminders.all()
     
@@ -163,7 +162,7 @@ def event_detail(request, event_id):
 
 
 def delete_reminder(request, reminder_id):
-    """Delete a reminder"""
+    
     reminder = get_object_or_404(Reminder, id=reminder_id)
     event_id = reminder.event.id
     

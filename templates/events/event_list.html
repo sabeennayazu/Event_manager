@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events - {{ view_type|title }} View{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        <i class="fas fa-calendar-alt me-2"></i>
+        {% if view_type == 'day' %}
+            Today's Events
+        {% elif view_type == 'week' %}
+            This Week's Events
+        {% else %}
+            {{ month_name }} {{ current_year }} Events
+        {% endif %}
+    </h1>
+    <a href="{% url 'add_event' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Add Event
+    </a>
+</div>
+
+{% if view_type == 'month' %}
+    <!-- Month Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="?view=month&year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-primary">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        <h3>{{ month_name }} {{ current_year }}</h3>
+        <a href="?view=month&year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-primary">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+        <div class="calendar-header">
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+        </div>
+        
+        {% for week in calendar %}
+            <div class="calendar-week">
+                {% for day in week %}
+                    <div class="calendar-day {% if day == 0 %}empty{% endif %}">
+                        {% if day != 0 %}
+                            <div class="day-number">{{ day }}</div>
+                            {% for date, day_events in events_by_date.items %}
+                                {% if date.day == day %}
+                                    {% for event in day_events %}
+                                        <div class="event-item {% if event.is_attended %}attended{% endif %}">
+                                            <a href="{% url 'event_detail' event.id %}" class="event-link">
+                                                {{ event.title }}
+                                                {% if event.time %}
+                                                    <small class="text-muted d-block">{{ event.time|time:"H:i" }}</small>
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <!-- List View for Day/Week -->
+    {% if events %}
+        <div class="row">
+            {% for event in events %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card event-card {% if event.is_attended %}attended{% endif %}">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ event.title }}
+                                {% if event.is_attended %}
+                                    <i class="fas fa-check-circle text-success ms-1"></i>
+                                {% endif %}
+                            </h5>
+                            <p class="card-text">
+                                <i class="fas fa-calendar me-1"></i>{{ event.date }}
+                                {% if event.time %}
+                                    <br><i class="fas fa-clock me-1"></i>{{ event.time|time:"H:i" }}
+                                {% endif %}
+                                {% if event.description %}
+                                    <br><small class="text-muted">{{ event.description|truncatewords:10 }}</small>
+                                {% endif %}
+                            </p>
+                            <div class="btn-group w-100" role="group">
+                                <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-outline-{% if event.is_attended %}warning{% else %}success{% endif %} btn-sm mark-attended" 
+                                        data-event-id="{{ event.id }}">
+                                    <i class="fas fa-{% if event.is_attended %}times{% else %}check{% endif %}"></i>
+                                </button>
+                                <a href="{% url 'set_reminder' event.id %}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-bell"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">No events found</h3>
+            <p class="text-muted">
+                {% if view_type == 'day' %}
+                    No events scheduled for today.
+                {% elif view_type == 'week' %}
+                    No events scheduled for this week.
+                {% else %}
+                    No events scheduled for this month.
+                {% endif %}
+            </p>
+            <a href="{% url 'add_event' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Add Your First Event
+            </a>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add CSRF token to page
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hidden CSRF token input if not present
+    if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+        const form = document.createElement('form');
+        form.style.display = 'none';
+        form.innerHTML = '{% csrf_token %}';
+        document.body.appendChild(form);
+    }
+});
+</script>
+{% endblock %}

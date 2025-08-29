@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3>{{ event.title }}</h3>
+                <div class="btn-group">
+                    <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <button class="btn btn-outline-{% if event.is_attended %}warning{% else %}success{% endif %} btn-sm mark-attended" 
+                            data-event-id="{{ event.id }}">
+                        <i class="fas fa-{% if event.is_attended %}times{% else %}check{% endif %}"></i>
+                        {% if event.is_attended %}Mark Not Attended{% else %}Mark Attended{% endif %}
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Date:</strong></div>
+                    <div class="col-sm-9">{{ event.date }}</div>
+                </div>
+                {% if event.time %}
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Time:</strong></div>
+                    <div class="col-sm-9">{{ event.time|time:"H:i" }}</div>
+                </div>
+                {% endif %}
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Status:</strong></div>
+                    <div class="col-sm-9">
+                        {% if event.is_attended %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Attended
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-clock me-1"></i>Not Attended
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if event.description %}
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Description:</strong></div>
+                    <div class="col-sm-9">{{ event.description|linebreaks }}</div>
+                </div>
+                {% endif %}
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Created:</strong></div>
+                    <div class="col-sm-9">{{ event.created_at|date:"M d, Y H:i" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Reminders</h5>
+                <a href="{% url 'set_reminder' event.id %}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-plus"></i> Add
+                </a>
+            </div>
+            <div class="card-body">
+                {% if reminders %}
+                    {% for reminder in reminders %}
+                        <div class="reminder-item d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                            <div>
+                                <small class="text-muted">{{ reminder.get_reminder_type_display }}</small><br>
+                                <strong>{{ reminder.get_minutes_before_display }}</strong>
+                                {% if reminder.is_sent %}
+                                    <br><span class="badge bg-success">Sent</span>
+                                {% endif %}
+                            </div>
+                            <form method="post" action="{% url 'delete_reminder' reminder.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                        onclick="return confirm('Delete this reminder?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No reminders set for this event.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'event_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Events
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add CSRF token to page
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hidden CSRF token input if not present
+    if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+        const form = document.createElement('form');
+        form.style.display = 'none';
+        form.innerHTML = '{% csrf_token %}';
+        document.body.appendChild(form);
+    }
+});
+</script>
+{% endblock %}

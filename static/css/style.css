@@ -1,0 +1,251 @@
+/* Custom styles for Event Manager */
+
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-gray: #f8f9fa;
+    --border-color: #dee2e6;
+}
+
+body {
+    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* Event Cards */
+.event-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.event-card.attended {
+    border-left: 4px solid var(--success-color);
+}
+
+.event-card.attended .card-title {
+    color: var(--success-color);
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-rows: auto repeat(6, 1fr);
+    gap: 1px;
+    background-color: var(--border-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 600px;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+
+.calendar-day-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+
+.calendar-day {
+    background-color: white;
+    padding: 8px;
+    min-height: 120px;
+    position: relative;
+}
+
+.calendar-day.empty {
+    background-color: var(--light-gray);
+}
+
+.day-number {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.event-item {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 2px 6px;
+    margin: 2px 0;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.event-item.attended {
+    background-color: var(--success-color);
+}
+
+.event-link {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.event-link:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* Reminder Items */
+.reminder-item {
+    background-color: var(--light-gray);
+    transition: background-color 0.2s ease;
+}
+
+.reminder-item:hover {
+    background-color: #e9ecef;
+}
+
+/* Form Styling */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Alert Styling */
+.alert {
+    border: none;
+    border-radius: 8px;
+}
+
+/* Button Styling */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .calendar-day {
+        min-height: 80px;
+        padding: 4px;
+    }
+    
+    .day-number {
+        font-size: 0.9rem;
+    }
+    
+    .event-item {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+    }
+    
+    .calendar-day-header {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        border-radius: 6px;
+        margin-bottom: 2px;
+    }
+    
+    .calendar-grid {
+        min-height: 400px;
+    }
+    
+    .calendar-day {
+        min-height: 60px;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Success/Error States */
+.text-success {
+    color: var(--success-color) !important;
+}
+
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.bg-danger {
+    background-color: var(--danger-color) !important;
+}
+
+/* Custom Badge Styles */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Hover Effects */
+.nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+
+.dropdown-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+}

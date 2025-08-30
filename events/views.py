@@ -10,45 +10,43 @@ from .forms import EventForm, ReminderForm
 
 
 def event_list(request):
-    
+    """
+    Handles calendar-based views: day, week, month.
+    """
     view_type = request.GET.get('view', 'month')
     today = timezone.now().date()
-    
+    context = {}
+
     if view_type == 'day':
         events = Event.objects.filter(date=today)
-        context = {
+        context.update({
             'events': events,
             'view_type': 'day',
             'current_date': today,
-        }
+        })
     elif view_type == 'week':
         start_week = today - timedelta(days=today.weekday())
         end_week = start_week + timedelta(days=6)
         events = Event.objects.filter(date__range=[start_week, end_week])
-        context = {
+        context.update({
             'events': events,
             'view_type': 'week',
             'start_week': start_week,
             'end_week': end_week,
-        }
-    else:  
+        })
+    else:  # month view
         year = int(request.GET.get('year', today.year))
         month = int(request.GET.get('month', today.month))
-        
         first_day = datetime(year, month, 1).date()
         last_day = datetime(year, month, calendar.monthrange(year, month)[1]).date()
-        
         events = Event.objects.filter(date__range=[first_day, last_day])
-        
-       
         cal = calendar.monthcalendar(year, month)
         events_by_date = {}
         for event in events:
             if event.date not in events_by_date:
                 events_by_date[event.date] = []
             events_by_date[event.date].append(event)
-        
-        context = {
+        context.update({
             'events': events,
             'view_type': 'month',
             'calendar': cal,
@@ -60,9 +58,21 @@ def event_list(request):
             'next_month': month + 1 if month < 12 else 1,
             'prev_year': year if month > 1 else year - 1,
             'next_year': year if month < 12 else year + 1,
-        }
-    
+        })
+    context['current_view'] = 'calendar'
     return render(request, 'events/event_list.html', context)
+
+
+def all_events(request):
+    """
+    Shows all events, regardless of date.
+    """
+    events = Event.objects.all().order_by('-date')
+    context = {
+        'events': events,
+        'current_view': 'all'
+    }
+    return render(request, 'events/all_events.html', context)
 
 
 def add_event(request):
@@ -130,7 +140,7 @@ def mark_attended(request, event_id):
 
 
 def set_reminder(request, event_id):
-    "
+    
     event = get_object_or_404(Event, id=event_id)
     
     if request.method == 'POST':

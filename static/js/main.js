@@ -131,14 +131,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Date input default to today for new events
-    const dateInputs = document.querySelectorAll('input[type="date"]');
-    dateInputs.forEach(input => {
-        if (!input.value && input.closest('form').querySelector('h3').textContent.includes('Add')) {
-            const today = new Date().toISOString().split('T')[0];
-            input.value = today;
-        }
-    });
+    // Date input default to today for new events (fixed)
+   // Date input default to today for new events
+const dateInputs = document.querySelectorAll('input[type="date"]');
+dateInputs.forEach(input => {
+    const form = input.closest('form');
+    const heading = form ? form.querySelector('h3') : null;
+
+    if (!input.value && heading && heading.textContent.includes('Add')) {
+        const today = new Date().toISOString().split('T')[0];
+        input.value = today;
+    }
+});
+
 });
 
 // Utility functions
@@ -165,6 +170,11 @@ function getCsrfToken() {
 
 function showAlert(message, type = 'info') {
     const alertContainer = document.querySelector('.container');
+    if (!alertContainer) {
+        console.warn("No .container found to show alerts.");
+        return;
+    }
+
     const alert = document.createElement('div');
     alert.className = `alert alert-${type} alert-dismissible fade show`;
     alert.innerHTML = `
@@ -215,4 +225,4 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Removed ServiceWorker registration to prevent console errors
+
